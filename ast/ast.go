@@ -25,12 +25,10 @@ type Program struct{
 	Statements []Statement
 }
 
-func(p *Program) tokenLiteral() {
-	if(len(p.statements) > 0)
-	{
+func(p *Program) tokenLiteral() string {
+	if(len(p.Statements) > 0){
 		return p.Statements[0].TokenLiteral()
-	}
-	else{
+	}else{
 		return ""
 	}
 }
