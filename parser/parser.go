@@ -11,20 +11,25 @@ type Parser struct{
 
 	curToken token.Token
 	peekToken token.Token
+	error []string
 
 }
 
 func New(l *lexer.Lexer) *Parser{
 
 	//Shorthand for creating a new parser, storing a reference in p.
-	p := &Parser{l : l}
-
+	p := &Parser{l : l, errors : []string{}}
 	//Make sure curToken and peekToken have values
 	p.nextToken()
 	p.nextToken()
 
 
 	return p
+}
+
+func (p *Parser) peekError(t token.TokenType){
+	msg := fmt.Sprintf("expected next token has to be %s, got %s instead", t,p.peekToken.Type)
+	p.errors = append(p.errors,msg)
 }
 
 func (p *Parser) nextToken() {
@@ -75,7 +80,7 @@ func (p *Parser) parseLetStatement() *ast.LetStatement{
 
 	stmt.Name = &ast.Identifier{Token: p.curToken, Value: p.curToken.Literal}
 
-	// Must be followed by an equal sign 
+	// Must be followed by an equal sign; the expect methods here provide a way to enforce types  
 	if !p.expectPeek(token.ASSIGN){
 		return nil
 	}
@@ -98,6 +103,7 @@ func (p *Parser) expectPeek(t token.TokenType) bool {
 		p.nextToken()
 		return true
 	} else {
+		p.peekError(t)
 		return false
 	}
 }
